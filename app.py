@@ -75,10 +75,21 @@ def index():
 def adduser():
     if request.method == 'POST':
         username = request.form['username']
-        password = request.form['password']        
+        password = request.form['password']
+        os.system(f'useradd -c "SSHUsers"  -p $(openssl passwd -1 {password}) {username}')
         return  redirect_dest(fallback=url_for('index'))
     else:
         return render_template('adduser.html')
-                           
+
+
+@app.route("/userlist")
+@login_required
+def userlist():
+    userlst=os.system("cat /etc/passwd | grep SSHUser").splitline()
+    print(userlst)
+    return 'ok'
+
+
+
 if __name__=='__main__':
-    app.run(debug=True,threaded=True,port=8088)
+    app.run(debug=True,threaded=True,port=8088, host="0.0.0.0")
